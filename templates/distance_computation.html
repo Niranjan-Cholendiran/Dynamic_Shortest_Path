@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortest Path Directions</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRZwdDuMJbdDDKxuA--sCFWvkhPNo14Tw&callback=initMap" async defer></script>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shortest Path Directions</h1>
+    <p><strong>Source:</strong> {{ source }}</p>
+    <p><strong>Destination:</strong> {{ destination }}</p>
+    <p><strong>Shortest Path:</strong> {{ path }}</p>
+    <p><strong>Estimated Travel Time:</strong> {{ time }} minutes</p>
+    <div id="map"></div>
+
+    <script>
+        function initMap() {
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer();
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 7,
+                center: { lat: 39.7392, lng: -104.9903 } // Centered at Denver, for example
+            });
+            directionsRenderer.setMap(map);
+
+            // Extract the route data passed from Flask
+            const path = {{ path | tojson }};
+            const source = path[0];
+            const destination = path[path.length - 1];
+            const waypoints = path.slice(1, -1).map(location => ({
+                location: location,
+                stopover: true
+            }));
+
+            // Set up the directions request
+            const request = {
+                origin: source,
+                destination: destination,
+                waypoints: waypoints,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            // Calculate and display the route
+            directionsService.route(request, (result, status) => {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    console.error("Directions request failed due to " + status);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Route</title>
+</head>
+<body>
+    <h1>Select Source, Destination, and Traffic Type</h1>
+    <form method="POST">
+        <label for="source">Source:</label>
+        <select name="source" id="source" required>
+            {% for city in cities %}
+            <option value="{{ city }}">{{ city }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="destination">Destination:</label>
+        <select name="destination" id="destination" required>
+            {% for city in cities %}
+            <option value="{{ city }}">{{ city }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="traffic_type">Traffic Type:</label>
+        <select name="traffic_type" id="traffic_type" required>
+            <option value="Current">Current</option>
+            <option value="Rush Hour">Rush Hour</option>
+        </select>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

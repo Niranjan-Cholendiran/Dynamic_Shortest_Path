@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select State and City</title>
+    <style>
+        select {
+            width: 300px; /* Adjust the width of dropdowns */
+            padding: 5px;
+        }
+    </style>
+    <script>
+        function updateCities() {
+            const state = document.getElementById("state").value;
+            const cityData = JSON.parse(document.getElementById("city-data").textContent);
+            const cityDropdown = document.getElementById("city");
+
+            // Clear the previous cities
+            cityDropdown.innerHTML = "";
+
+            // If a valid state is selected, populate the cities
+            if (cityData[state]) {
+                cityData[state].forEach(city => {
+                    const option = document.createElement("option");
+                    option.value = city;
+                    option.textContent = city;
+                    cityDropdown.appendChild(option);
+                });
+                cityDropdown.disabled = false; // Enable dropdown after state selection
+            } else {
+                const defaultOption = document.createElement("option");
+                defaultOption.textContent = "Select a state first";
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                cityDropdown.appendChild(defaultOption);
+                cityDropdown.disabled = true; // Disable dropdown if no state selected
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Select State and City</h1>
+    <form method="POST">
+        <!-- State Dropdown -->
+        <label for="state">State:</label>
+        <select name="state" id="state" onchange="updateCities()" required>
+            <option value="" selected disabled>Select a state</option>
+            {% for state in states %}
+            <option value="{{ state }}">{{ state }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <!-- City Dropdown -->
+        <label for="city">City:</label>
+        <select name="city" id="city" multiple required>
+            <option>Select a state first</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Next</button>
+    </form>
+
+    <!-- Embed city data as JSON -->
+    <script id="city-data" type="application/json">
+        {
+            {% for state, cities in city_data.items() %}
+            "{{ state }}": {{ cities|tojson|safe }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        }
+    </script>
+</body>
+</html>

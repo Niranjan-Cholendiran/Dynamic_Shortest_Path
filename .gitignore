@@ -1,3 +1,6 @@
+# Ignore configuration file containing sensitive data
+config.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

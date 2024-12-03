@@ -1,3 +1,4 @@
+import json
 from flask import Flask, render_template, request, redirect, url_for
 import googlemaps
 from datetime import datetime
@@ -8,19 +9,10 @@ from heapq import heapify, heappush, heappop
 app = Flask(__name__)
 
 # Setup GMAP API Client
-gmap_client= googlemaps.Client(key= os.getenv('GOOGLE_MAP_API_KEY'))
-
-
-# class Dijkstra:
-#     def __init__(self, graph):
-#         self.graph = graph
-
-#     def shortest_path(self, start, end):
-#         # A mock implementation of Dijkstra's algorithm.
-#         # Replace with the actual algorithm logic.
-#         path = [start, 'Boulder, Colorado', end]  # Example path (mocked)
-#         time = 1200  # Mock travel time in seconds
-#         return time, path
+with open('config.json', 'r') as f:
+    config = json.load(f)
+    google_api_key = config['googleApiKey']
+gmap_client= googlemaps.Client(key= google_api_key)
 
 class Dijkstra:
     def __init__(self, graph):

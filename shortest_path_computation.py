@@ -8,8 +8,7 @@ from heapq import heapify, heappush, heappop
 app = Flask(__name__)
 
 # Setup GMAP API Client
-#gmap_client= googlemaps.Client(key= os.getenv('GOOGLE_MAP_API_KEY'))
-gmap_client = googlemaps.Client(key='AIzaSyCRZwdDuMJbdDDKxuA--sCFWvkhPNo14Tw')
+gmap_client= googlemaps.Client(key= os.getenv('GOOGLE_MAP_API_KEY'))
 
 
 # class Dijkstra:

@@ -5,9 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select State and City</title>
     <style>
-        select {
-            width: 300px; /* Adjust the width of dropdowns */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .form-section {
+            flex: 1;
+            max-width: 300px;
+            margin-left: 70px;
+            margin-top: 60px;
+        }
+
+        .form-section select {
+            width: 100%; /* Adjust width to make dropdowns smaller */
             padding: 5px;
+            background-color: #2e2e2e;
+            color: #ffffff;
+            border: 1px solid #555555;
+            border-radius: 5px;
+        }
+
+        .form-section button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .form-section button:hover {
+            background-color: #45a049;
+        }
+
+        .map-section {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .map-section img {
+            max-width: 100%;
+            width: 700px; /* Adjust image width */
+            height: 500px; /* Adjust image height */
+            border: 2px solid #555555;
+            border-radius: 10px;
         }
     </style>
     <script>
@@ -15,6 +76,7 @@
             const state = document.getElementById("state").value;
             const cityData = JSON.parse(document.getElementById("city-data").textContent);
             const cityDropdown = document.getElementById("city");
+            const stateMap = document.getElementById("state-map");
 
             // Clear the previous cities
             cityDropdown.innerHTML = "";
@@ -28,6 +90,9 @@
                     cityDropdown.appendChild(option);
                 });
                 cityDropdown.disabled = false; // Enable dropdown after state selection
+
+                // Update the map image
+                stateMap.src = `/static/maps/${state.replace(/\s/g, '_')}.png`;
             } else {
                 const defaultOption = document.createElement("option");
                 defaultOption.textContent = "Select a state first";
@@ -35,32 +100,45 @@
                 defaultOption.selected = true;
                 cityDropdown.appendChild(defaultOption);
                 cityDropdown.disabled = true; // Disable dropdown if no state selected
+
+                // Reset the map image
+                stateMap.src = "/static/maps/default.png";
             }
         }
     </script>
 </head>
 <body>
     <h1>Select State and City</h1>
-    <form method="POST">
-        <!-- State Dropdown -->
-        <label for="state">State:</label>
-        <select name="state" id="state" onchange="updateCities()" required>
-            <option value="" selected disabled>Select a state</option>
-            {% for state in states %}
-            <option value="{{ state }}">{{ state }}</option>
-            {% endfor %}
-        </select>
-        <br><br>
+    <div class="container">
+        <!-- Form Section -->
+        <div class="form-section">
+            <form method="POST">
+                <!-- State Dropdown -->
+                <label for="state">State:</label>
+                <select name="state" id="state" onchange="updateCities()" required>
+                    <option value="" selected disabled>Select a state</option>
+                    {% for state in states %}
+                    <option value="{{ state }}">{{ state }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
 
-        <!-- City Dropdown -->
-        <label for="city">City:</label>
-        <select name="city" id="city" multiple required>
-            <option>Select a state first</option>
-        </select>
-        <br><br>
+                <!-- City Dropdown -->
+                <label for="city">City:</label>
+                <select name="city" id="city" multiple required>
+                    <option>Select a state first</option>
+                </select>
+                <br><br>
 
-        <button type="submit">Next</button>
-    </form>
+                <button type="submit">Next</button>
+            </form>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-section">
+            <img id="state-map" src="/static/maps/default.png" alt="State Map">
+        </div>
+    </div>
 
     <!-- Embed city data as JSON -->
     <script id="city-data" type="application/json">

@@ -4,31 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Route</title>
+    <style>
+        body {
+            background-color: #1e1e1e; /* Dark background */
+            color: #ffffff; /* Light text color */
+            font-family: Arial, sans-serif;
+            display: flex; /* Use flexbox for layout */
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center; /* Center items horizontally */
+            padding: 20px; /* Add some padding */
+        }
+        h1 {
+            margin-bottom: 20px; /* Space below the title */
+        }
+        .form-container {
+            display: flex; /* Use flexbox for the form layout */
+            justify-content: space-between; /* Space between the selectors and the image */
+            width: 100%; /* Full width for the container */
+            max-width: 1000px; /* Maximum width for the layout */
+        }
+        .selectors {
+            width: 20%; /* Adjust width for the selectors */
+            text-align: left; /* Align text to the left */
+            margin-right: 20px; /* Space between selectors and image */
+        }
+        select {
+            width: 100%; /* Full width for dropdowns */
+            padding: 5px;
+            margin: 10px 0; /* Margin for spacing */
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #1e1e1e; /* Darker dropdown */
+            color: #ffffff;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #1a73e8; /* Button color */
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3; /* Button hover color */
+        }
+        .map-container {
+            width: 60%; /* Increase width for the image container */
+            display: flex; /* Center the image */
+            justify-content: center; /* Center the image horizontally */
+        }
+        .map-container img {
+            width: 100%; /* Set desired width */
+            max-width: 600px; /* Maximum width for the image */
+            height: auto; /* Maintain aspect ratio */
+            border: 2px solid #ffffff; /* Optional: add a border */
+        }
+    </style>
 </head>
 <body>
     <h1>Select Source, Destination, and Traffic Type</h1>
-    <form method="POST">
-        <label for="source">Source:</label>
-        <select name="source" id="source" required>
-            {% for city in cities %}
-            <option value="{{ city }}">{{ city }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <label for="destination">Destination:</label>
-        <select name="destination" id="destination" required>
-            {% for city in cities %}
-            <option value="{{ city }}">{{ city }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <label for="traffic_type">Traffic Type:</label>
-        <select name="traffic_type" id="traffic_type" required>
-            <option value="Current">Current</option>
-            <option value="Rush Hour">Rush Hour</option>
-        </select>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
+    <div class="form-container">
+        <div class="selectors">
+            <form method="POST">
+                <label for="source">Source:</label>
+                <select name="source" id="source" required>
+                    {% for city in cities %}
+                    <option value="{{ city }}">{{ city }}</option>
+                    {% endfor %}
+                </select>
+                <label for="destination">Destination:</label>
+                <select name="destination" id="destination" required>
+                    {% for city in cities %}
+                    <option value="{{ city }}">{{ city }}</option>
+                    {% endfor %}
+                </select>
+                <label for="traffic_type">Traffic Type:</label>
+                <select name="traffic_type" id="traffic_type" required>
+                    <option value="Current">Current</option>
+                    <option value="Rush Hour">Rush Hour</option>
+                </select>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <!-- Image of the selected state -->
+        <div class="map-container">
+            {% if selected_state %}
+                <img src="{{ url_for('static', filename='maps/' ~ selected_state.replace(' ', '_') ~ '.png') }}" alt="{{ selected_state }} map">
+            {% else %}
+                <p>No map available.</p> <!-- Optional: display a message if selected_state is None -->
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

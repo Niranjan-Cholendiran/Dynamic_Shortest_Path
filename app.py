@@ -2,14 +2,15 @@ from flask import Flask, render_template, request, redirect, url_for
 import pandas as pd
 from shortest_path_computation import compute_shortest_path  # Import the shortest_path function
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # Load data from the Excel file
 city_data = pd.read_excel('city_list.xlsx')
 
 # Variables to hold selected cities and user choices
 selected_cities_list = []
-user_choices = {"source": None, "   ": None, "traffic_type": None}
+user_choices = {"source": None, "destination": None, "traffic_type": None}
+selected_state = None  # Variable to store the selected state
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -19,7 +20,7 @@ def select_state_city():
         selected_cities = request.form.getlist("city")
         for city in selected_cities:
             selected_cities_list.append(f"{city}, {selected_state}")
-        return redirect(url_for("select_route"))
+        return redirect(url_for("select_route", selected_state=selected_state))  # Pass selected_state here
 
     states = city_data['State'].unique()
     city_dict = city_data.groupby('State')['City'].apply(list).to_dict()
@@ -34,23 +35,22 @@ def select_route():
         user_choices["traffic_type"] = request.form.get("traffic_type")
         return redirect(url_for("distance_computation"))
 
-    return render_template("page2.html", cities=selected_cities_list)
-
+    selected_state = request.args.get('selected_state')  # Retrieve the selected state from query parameters
+    return render_template("page2.html", cities=selected_cities_list, selected_state=selected_state)
 
 @app.route("/distance-computation", methods=["GET"])
 def distance_computation():
-    # Call the `shortest_path` function with user input
-    #result = compute_shortest_path(selected_cities_list, user_choices)
     # Calculate the shortest path
-    shortest_time, shortest_path_result = compute_shortest_path(
-        selected_cities_list, user_choices
-    )
+    shortest_time, shortest_path_result, all_connectors = compute_shortest_path(selected_cities_list, user_choices)
+
+    # Render the result to the template
     return render_template(
         "distance_computation.html",
         source=user_choices["source"],
         destination=user_choices["destination"],
         path=shortest_path_result,
-        time=int(shortest_time/60),
+        time=int(shortest_time / 60),
+        all_connectors=all_connectors,  # Pass all connections
     )
 
 

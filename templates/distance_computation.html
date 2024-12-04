@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shortest Path Directions</title>
+    <title>Shortest Path Map</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=[REPLACE WITH GOOGLE_MAP_API_KEY]&callback=initMap" async defer></script>
     <style>
         #map {
-            height: 600px;
+            height: 90vh;
             width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 0 10px;
         }
     </style>
 </head>
@@ -19,35 +25,79 @@
     <p><strong>Shortest Path:</strong> {{ path }}</p>
     <p><strong>Estimated Travel Time:</strong> {{ time }} minutes</p>
     <div id="map"></div>
-
     <script>
         function initMap() {
-            const directionsService = new google.maps.DirectionsService();
-            const directionsRenderer = new google.maps.DirectionsRenderer();
             const map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 7,
-                center: { lat: 39.7392, lng: -104.9903 } // Centered at Denver, for example
+                center: { lat: 39.7392, lng: -104.9903 }, // Denver, Colorado
+            });
+
+            // Plot all connectors (orange)
+            const allConnectors = {{ all_connectors | tojson }};
+            allConnectors.forEach(connector => {
+                const flightPath = new google.maps.Polyline({
+                    path: [
+                        { lat: connector.source.lat, lng: connector.source.lng },
+                        { lat: connector.destination.lat, lng: connector.destination.lng },
+                    ],
+                    geodesic: true,
+                    strokeColor: "#FFA500", // Orange color
+                    strokeOpacity: 0.8,
+                    strokeWeight: 3,
+                });
+                flightPath.setMap(map);
+            });
+
+            // Mark nodes (large purple circles)
+            const cityCoordinates = {{ all_connectors | tojson }}.flatMap(connector => [
+                connector.source,
+                connector.destination,
+            ]);
+            const uniqueCities = Array.from(
+                new Set(cityCoordinates.map(coord => JSON.stringify(coord)))
+            ).map(JSON.parse);
+
+            uniqueCities.forEach(city => {
+                new google.maps.Marker({
+                    position: { lat: city.lat, lng: city.lng },
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: "#FFA500", // Orange again
+                        fillOpacity: 0.8,
+                        scale: 8, // Large circle
+                        strokeColor: "#800080",
+                        strokeWeight: 2,
+                    },
+                });
+            });
+
+            // Draw the shortest path (blue)
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({
+                suppressMarkers: true, // Avoid default markers
+                polylineOptions: {
+                    strokeColor: "#0000FF", // Blue for shortest path
+                    strokeWeight: 4,
+                },
             });
             directionsRenderer.setMap(map);
 
-            // Extract the route data passed from Flask
             const path = {{ path | tojson }};
             const source = path[0];
             const destination = path[path.length - 1];
             const waypoints = path.slice(1, -1).map(location => ({
                 location: location,
-                stopover: true
+                stopover: true,
             }));
 
-            // Set up the directions request
             const request = {
                 origin: source,
                 destination: destination,
                 waypoints: waypoints,
-                travelMode: google.maps.TravelMode.DRIVING
+                travelMode: google.maps.TravelMode.DRIVING,
             };
 
-            // Calculate and display the route
             directionsService.route(request, (result, status) => {
                 if (status === google.maps.DirectionsStatus.OK) {
                     directionsRenderer.setDirections(result);
@@ -56,6 +106,9 @@
                 }
             });
         }
+
+        // Initialize map
+        window.onload = initMap;
     </script>
 </body>
 </html>

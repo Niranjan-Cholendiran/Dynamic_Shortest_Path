@@ -140,12 +140,16 @@ def compute_shortest_path(selected_cities_list, user_choices):
 
     # Get coordinates for all cities
     print("Collecting Coordinates Of All Cities")
+    shortest_path_result_coordinates=[]
     city_coordinates = {}
     for city in selected_cities_list:
         geocode_result = gmap_client.geocode(city)
         if geocode_result:
             location = geocode_result[0]["geometry"]["location"]
             city_coordinates[city] = {"lat": location["lat"], "lng": location["lng"]}
+            if city in shortest_path_result:
+                shortest_path_result_coordinates.append({"lat": location["lat"], "lng": location["lng"]})
+
 
     # All possible connections (example)
     all_connectors = []
@@ -159,7 +163,7 @@ def compute_shortest_path(selected_cities_list, user_choices):
             )
     #print("all_connectors:")
     #print(all_connectors)
-    return shortest_time, shortest_path_result, all_connectors
+    return shortest_time, shortest_path_result, shortest_path_result_coordinates, all_connectors
 
 
 if __name__ == "__main__":

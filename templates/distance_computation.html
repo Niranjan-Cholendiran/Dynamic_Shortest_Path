@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shortest Path Map</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=[REPLACE WITH GOOGLE_MAP_API_KEY]&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=[GOOGLE API KEY]&callback=initMap" async defer></script>
     <style>
         #map {
             height: 90vh;
@@ -22,6 +22,7 @@
     <h1>Shortest Path Directions</h1>
     <p><strong>Source:</strong> {{ source }}</p>
     <p><strong>Destination:</strong> {{ destination }}</p>
+    <p><strong>Traffic Type:</strong> {{ traffic_type }}</p>
     <p><strong>Shortest Path:</strong> {{ path }}</p>
     <p><strong>Estimated Travel Time:</strong> {{ time }} minutes</p>
     <div id="map"></div>
@@ -104,6 +105,23 @@
                 } else {
                     console.error("Directions request failed due to " + status);
                 }
+            });
+
+            // Add blue markers for shortest path coordinates
+            const pathCoordinates = {{ path_corr | tojson }};
+            pathCoordinates.forEach(coord => {
+                new google.maps.Marker({
+                    position: { lat: coord.lat, lng: coord.lng },
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: "#0000FF", // Blue
+                        fillOpacity: 0.9,
+                        scale: 6, // Medium circle
+                        strokeColor: "#0000FF",
+                        strokeWeight: 1,
+                    },
+                });
             });
         }
 

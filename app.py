@@ -41,14 +41,16 @@ def select_route():
 @app.route("/distance-computation", methods=["GET"])
 def distance_computation():
     # Calculate the shortest path
-    shortest_time, shortest_path_result, all_connectors = compute_shortest_path(selected_cities_list, user_choices)
+    shortest_time, shortest_path_result, shortest_path_result_coordinates, all_connectors = compute_shortest_path(selected_cities_list, user_choices)
 
     # Render the result to the template
     return render_template(
         "distance_computation.html",
         source=user_choices["source"],
         destination=user_choices["destination"],
+        traffic_type= user_choices["traffic_type"],
         path=shortest_path_result,
+        path_corr= shortest_path_result_coordinates,
         time=int(shortest_time / 60),
         all_connectors=all_connectors,  # Pass all connections
     )

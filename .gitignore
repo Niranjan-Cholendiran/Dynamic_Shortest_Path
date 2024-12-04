@@ -1,6 +1,9 @@
 # Ignore configuration file containing sensitive data
 config.json
 
+# Ignore PPT and DOC
+documentation/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

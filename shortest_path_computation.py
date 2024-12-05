@@ -130,13 +130,6 @@ def compute_shortest_path(selected_cities_list, user_choices):
     print("Shortest Path Ready")
     print(shortest_path_result)
 
-    # Calculate other connectors
-    all_connectors = [
-        {"source": "Fort Collins, Colorado", "destination": "Boulder, Colorado"},
-        {"source": "Boulder, Colorado", "destination": "Thornton, Colorado"},
-        {"source": "Thornton, Colorado", "destination": "Denver, Colorado"},
-        # Add all edges here
-    ]
 
     # Get coordinates for all cities
     print("Collecting Coordinates Of All Cities")
